@@ -6,30 +6,41 @@ using UnityEngine.UI;
 public class SceneChangerButton : MonoBehaviour
 {
     [Header("Button Settings")]
-    public Button button;           // El botón que ejecutará la acción
-    public string sceneName;        // Nombre de la escena que se cargará
+    public List<Button> buttons = new List<Button>();   // Lista de botones
+    public List<string> sceneNames = new List<string>(); // Lista de nombres de escenas
 
     void Start()
     {
-        if (button != null)
+        if (buttons.Count != sceneNames.Count)
         {
-            button.onClick.AddListener(ChangeScene); // Asignar el evento al botón
+            Debug.LogWarning("La cantidad de botones no coincide con la cantidad de escenas.");
+            return;
         }
-        else
+
+        // Asignar la acción a cada botón
+        for (int i = 0; i < buttons.Count; i++)
         {
-            Debug.LogWarning("El botón no está asignado en el Inspector.");
+            int index = i;  // Capturar el índice para la correcta asignación
+            if (buttons[i] != null)
+            {
+                buttons[i].onClick.AddListener(() => ChangeScene(index)); // Asignar el evento
+            }
+            else
+            {
+                Debug.LogWarning("Uno de los botones no está asignado en el Inspector.");
+            }
         }
     }
 
-    public void ChangeScene()
+    public void ChangeScene(int index)
     {
-        if (!string.IsNullOrEmpty(sceneName))
+        if (index >= 0 && index < sceneNames.Count && !string.IsNullOrEmpty(sceneNames[index]))
         {
-            SceneManager.LoadScene(sceneName); // Cambiar a la escena deseada
+            SceneManager.LoadScene(sceneNames[index]); // Cambiar a la escena correspondiente
         }
         else
         {
-            Debug.LogWarning("El nombre de la escena no está configurado.");
+            Debug.LogWarning("El nombre de la escena no está configurado o el índice es incorrecto.");
         }
     }
 }
